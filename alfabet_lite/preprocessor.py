@@ -1,10 +1,10 @@
-import nfp
 import numpy as np
-from nfp.preprocessing.features import get_ring_size
+
 from pooch import retrieve
 
-from alfabet import _model_files_baseurl
-
+from . import features
+from .features import get_ring_size
+from .mol_preprocessor import SmilesBondIndexPreprocessor
 
 def atom_featurizer(atom):
     """Return an integer hash representing the atom type"""
@@ -22,7 +22,6 @@ def atom_featurizer(atom):
         )
     )
 
-
 def bond_featurizer(bond, flipped=False):
     if not flipped:
         atoms = "{}-{}".format(
@@ -39,7 +38,7 @@ def bond_featurizer(bond, flipped=False):
     return " ".join([atoms, btype, ring]).strip()
 
 
-preprocessor = nfp.SmilesBondIndexPreprocessor(
+preprocessor = SmilesBondIndexPreprocessor(
     atom_features=atom_featurizer,
     bond_features=bond_featurizer,
     explicit_hs=True,
@@ -48,7 +47,7 @@ preprocessor = nfp.SmilesBondIndexPreprocessor(
 
 preprocessor.from_json(
     retrieve(
-        _model_files_baseurl + "preprocessor.json",
+        "https://github.com/pstjohn/alfabet-models/releases/download/v0.1.1/preprocessor.json",
         known_hash="412d15ca4d0e8b5030e9b497f566566922818ff355b8ee677a91dd23696878ac",
     )
 )

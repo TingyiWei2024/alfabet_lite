@@ -1,5 +1,5 @@
 import numpy as np
-from alfabet import model
+from alfabet_lite import model
 
 
 def test_predict():

@@ -1,13 +1,56 @@
-from typing import List
+import os
+from typing import Dict, List, Tuple
 
+import numpy as np
 import pandas as pd
 import rdkit.Chem
-from nfp.frameworks import tf
 from tqdm import tqdm
+from pooch import retrieve, Untar
 
-from alfabet.fragment import Molecule, get_fragments
-from alfabet.prediction import bde_dft, model, validate_inputs
-from alfabet.preprocessor import get_features, preprocessor
+import tensorflow as tf
+
+from . import _model_files_baseurl
+from .fragment import Molecule, get_fragments
+from .preprocessor import get_features, preprocessor
+
+"""
+Merged some functions from predict.py into this file and dropped prediction.py.
+"""
+
+model_files = retrieve(
+    _model_files_baseurl + "model.tar.gz",
+    known_hash="sha256:f1c2b9436f2d18c76b45d95140e6"
+    "a08c096250bd5f3e2b412492ca27ab38ad0c",
+    processor=Untar(extract_dir="model"),
+)
+
+model = tf.keras.models.load_model(os.path.dirname(model_files[0]))
+
+bde_dft = pd.read_csv(
+    retrieve(
+        _model_files_baseurl + "bonds_for_neighbors.csv.gz",
+        known_hash="sha256:d4fb825c42d790d4b2b4bd5dc2d"
+        "87c844932e2da82992a31d7521ce51395adb1",
+    )
+)
+
+def validate_inputs(inputs: Dict) -> Tuple[bool, np.ndarray, np.ndarray]:
+    """Check the given SMILES to ensure it's present in the model's
+    preprocessor dictionary.
+
+    Returns:
+    (is_outlier, missing_atom, missing_bond)
+
+    """
+    inputs = {key: np.asarray(val) for key, val in inputs.items()}
+
+    missing_bond = np.array(list(set(inputs["bond_indices"][inputs["bond"] == 1])))
+    missing_atom = np.arange(len(inputs["atom"]))[inputs["atom"] == 1]
+
+    is_outlier = (missing_bond.size != 0) | (missing_atom.size != 0)
+
+    return is_outlier, missing_atom, missing_bond
+
 
 
 def get_max_bonds(molecule_list: List[Molecule]):
@@ -103,3 +146,4 @@ def predict(smiles_list, drop_duplicates=True, batch_size=1, verbose=False):
     )
 
     return pred_df
+

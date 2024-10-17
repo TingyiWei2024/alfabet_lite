@@ -1,2 +1,2 @@
 include versioneer.py
-include alfabet/_version.py
+include alfabet_lite/_version.py
