@@ -1,9 +1,4 @@
-![ALFABET logo](/docs/logo.svg)
-
-[![PyPI version](https://badge.fury.io/py/alfabet.svg)](https://badge.fury.io/py/alfabet)
-[![Build Status](https://travis-ci.com/NREL/alfabet.svg?branch=master)](https://travis-ci.com/NREL/alfabet)
-
-# A machine-Learning derived, Fast, Accurate Bond dissociation Enthalpy Tool (ALFABET-LITE)
+# ALFABET-LITE: A machine-Learning derived, Fast, Accurate Bond dissociation Enthalpy Tool based on ALFABET
 
 This library contains the trained graph neural network model for the prediction of homolytic bond dissociation energies (BDEs) of organic molecules with C, H, N, and O atoms, which was originally published in St. John et al. (2020) and availalbe [here](https://github.com/NREL/alfabet). This **Lite** version of the model is a lightweigted version of the full model framework focusing on the prediction side only, which has the following advantages:
 - Optimized dependencies and compatibility
@@ -28,8 +23,12 @@ St. John, P. C., Guan, Y., Kim, Y., Kim, S., & Paton, R. S. (2020). Prediction o
 ## Installation
 
 ```bash
-$ # Under a virtual environment, install with pip
-$ pip install alfabet-lite
+$ # Under a virtual environment, clone the repo
+$ git clone https://github.com/NREL/alfabet-lite.git
+$ # Move into the repo directory
+$ cd alfabet-lite
+$ # Install the package only, without tensorflow
+$ pip install .
 $ # If you want to install tensorflow version 2.15 as well
 $ pip install alfabet-lite[tensorflow]
 $ # If you are using Apple Silicon (M series chip) and want GPU support using tensorflow-metal
